@@ -507,7 +507,7 @@ static bool page_check(dbref player, dbref target)
     {
         notify(player, tprintf(T("You don\xE2\x80\x99t have enough %s."), mudconf.many_coins));
     }
-    else if (!Connected(target))
+    else if (!Connected(target) && !Connected(Owner(target)))
     {
         page_return(player, target, T("Away"), A_AWAY,
             tprintf(T("Sorry, %s is not connected."), Moniker(target)));

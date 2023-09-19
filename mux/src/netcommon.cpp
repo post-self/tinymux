@@ -6,6 +6,7 @@
  * portions of the descriptor data structure are not used.
  */
 
+#include <string>
 #include "copyright.h"
 #include "autoconf.h"
 #include "config.h"
@@ -1147,7 +1148,8 @@ static void announce_connect(const dbref player, DESC *d)
     {
         check_mail(player, 0, false);
     }
-    look_in(player, Location(player), (LK_SHOWEXIT|LK_OBEYTERSE|LK_SHOWVRML));
+    // look_in(player, Location(player), (LK_SHOWEXIT|LK_OBEYTERSE|LK_SHOWVRML));
+    do_wait(player, player, player, 0, key, 2, const_cast<UTF8*>(T("0.5")), const_cast<UTF8*>(T("look here")), NULL, 0);
     mudstate.curr_enactor = temp;
 }
 
@@ -1681,7 +1683,7 @@ void check_events(void)
 
 }
 
-#define MAX_TRIMMED_NAME_LENGTH 16
+#define MAX_TRIMMED_NAME_LENGTH 32
 LBUF_OFFSET trimmed_name(dbref player, UTF8 cbuff[MBUF_SIZE], LBUF_OFFSET nMin, LBUF_OFFSET nMax, LBUF_OFFSET nPad)
 {
     mux_field nName = StripTabsAndTruncate(
@@ -1900,12 +1902,12 @@ static void dump_users(DESC *e, const UTF8 *match, int key)
             size_t vwNameField = strlen((char *)NameField);
             if (d->flags & DS_CONNECTED)
             {
-                vwNameField = trimmed_name(d->player, NameField, 13, MAX_TRIMMED_NAME_LENGTH, 1);
+                vwNameField = trimmed_name(d->player, NameField, MAX_TRIMMED_NAME_LENGTH, MAX_TRIMMED_NAME_LENGTH, 1);
             }
 
             // The width size allocated to the 'On For' field.
             //
-            size_t nOnFor = 25 - vwNameField;
+            size_t nOnFor = 31 - vwNameField;
 
             const UTF8 *pTimeStamp1 = time_format_1(ltdConnected.ReturnSeconds(), nOnFor);
             const UTF8 *pTimeStamp2 = time_format_2(ltdLastTime.ReturnSeconds());
