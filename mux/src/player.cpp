@@ -5,6 +5,7 @@
  * limited names, can log in, etc.
  */
 
+#include <string>
 #include "copyright.h"
 #include "autoconf.h"
 #include "config.h"
@@ -1047,6 +1048,8 @@ dbref lookup_player_name(UTF8 *name, bool &bAlias)
 
 dbref lookup_player(dbref doer, UTF8 *name, bool check_who)
 {
+    name = trim_spaces(name);
+    
     if (string_compare(name, T("me")) == 0)
     {
         return doer;
@@ -1072,8 +1075,11 @@ dbref lookup_player(dbref doer, UTF8 *name, bool check_who)
             return NOTHING;
         }
 
-        if ( !(  isPlayer(thing)
-              || God(doer)))
+        if ( !(
+            isPlayer(thing) ||
+            God(doer) ||
+            has_flag(thing, thing, T("PUPPET"))
+        ))
         {
             thing = NOTHING;
         }
@@ -1091,6 +1097,26 @@ dbref lookup_player(dbref doer, UTF8 *name, bool check_who)
             thing = NOTHING;
         }
     }
+
+    if (NOTHING == thing
+        && check_who)
+    {
+        for (dbref i = 0; i < mudstate.db_top; i++) {
+            if (
+                Good_obj(i) &&
+                /*strncmp(
+                    mux_strlwr(p, pCased),
+                    chrName,
+                    lenName
+                ) == 0 &&*/
+                mux_stricmp(name, Name(i)) == 1 &&
+                has_flag(i, i, T("PUPPET"))
+            ) {
+                thing = i;
+            }
+        }
+    }
+
     return thing;
 }
 

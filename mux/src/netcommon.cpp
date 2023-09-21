@@ -1148,8 +1148,9 @@ static void announce_connect(const dbref player, DESC *d)
     {
         check_mail(player, 0, false);
     }
-    // look_in(player, Location(player), (LK_SHOWEXIT|LK_OBEYTERSE|LK_SHOWVRML));
+
     do_wait(player, player, player, 0, key, 2, const_cast<UTF8*>(T("0.5")), const_cast<UTF8*>(T("look here")), NULL, 0);
+//  look_in(player, Location(player), (LK_SHOWEXIT|LK_OBEYTERSE|LK_SHOWVRML));
     mudstate.curr_enactor = temp;
 }
 
@@ -1683,7 +1684,7 @@ void check_events(void)
 
 }
 
-#define MAX_TRIMMED_NAME_LENGTH 32
+#define MAX_TRIMMED_NAME_LENGTH 22
 LBUF_OFFSET trimmed_name(dbref player, UTF8 cbuff[MBUF_SIZE], LBUF_OFFSET nMin, LBUF_OFFSET nMax, LBUF_OFFSET nPad)
 {
     mux_field nName = StripTabsAndTruncate(
@@ -1751,7 +1752,7 @@ static void dump_users(DESC *e, const UTF8 *match, int key)
         queue_write(e, T("                               "));
         queue_write(e, T("     Characters Input----  Characters Output---\r\n"));
     }
-    queue_write(e, T("Player Name        On For Idle "));
+    queue_write(e, T("Player Name              On For Idle "));
     if (key == CMD_SESSION)
     {
         queue_write(e, T("Port Pend  Lost     Total  Pend  Lost     Total\r\n"));

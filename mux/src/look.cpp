@@ -3,6 +3,7 @@
  *
  */
 
+#include <string>
 #include "copyright.h"
 #include "autoconf.h"
 #include "config.h"
@@ -1265,7 +1266,7 @@ void look_in(dbref player, dbref loc, int key)
 
         std::string strLoc = std::to_string(loc);
         strLoc.insert(0, "#");
-        const char* chLoc = strLoc.c_str();
+        const char* chrLoc = strLoc.c_str();
         const UTF8* utfLoc = reinterpret_cast<const uint8_t*>(chrLoc);
         const UTF8* ParameterList[] = { utfLoc };
 

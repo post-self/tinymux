@@ -603,7 +603,7 @@ void do_page
 
             // Decode space-delimited or comma-delimited recipients.
             //
-            string_token st(p, T(", "));
+            string_token st(p, T(","));
             UTF8 *r;
             for (r = st.parse(); r; r = st.parse())
             {

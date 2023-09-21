@@ -599,7 +599,7 @@ static CMDENT_NO_ARG command_table_no_arg[] =
     {T("inventory"),   nullptr,    CA_PUBLIC,   0,          CS_NO_ARGS, 0, do_inventory},
     {T("leave"),       leave_sw,   CA_LOCATION, 0,          CS_NO_ARGS, 0, do_leave},
     {T("logout"),      nullptr,    CA_PUBLIC,   CMD_LOGOUT, CS_NO_ARGS, 0, logged_out0},
-    // {T("quit"),        nullptr,    CA_PUBLIC,   CMD_QUIT,   CS_NO_ARGS, 0, logged_out0},
+//  {T("quit"),        nullptr,    CA_PUBLIC,   CMD_QUIT,   CS_NO_ARGS, 0, logged_out0},
     {T("report"),      nullptr,    CA_PUBLIC,   0,          CS_NO_ARGS, 0, do_report},
     {T("score"),       nullptr,    CA_PUBLIC,   0,          CS_NO_ARGS, 0, do_score},
     {T("version"),     nullptr,    CA_PUBLIC,   0,          CS_NO_ARGS, 0, do_version},

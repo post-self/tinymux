@@ -2297,13 +2297,11 @@ FUNCTION(fun_visible)
         safe_str(T(" (ARG1)"), buff, bufc);
         return;
     }
-    /*
-    else if (!Controls(executor, it))
-    {
-        safe_noperm(buff, bufc);
-        return;
-    }
-    */
+    //else if (!Controls(executor, it))
+    //{
+    //    safe_noperm(buff, bufc);
+    //    return;
+    //}
 
     bool  result = false;
     dbref thing;
