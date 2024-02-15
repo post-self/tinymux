@@ -1,6 +1,5 @@
 mux/game/bin/dbconvert
 *.so
-mux/src/.depend
 *.o
 *.data
 *.log
