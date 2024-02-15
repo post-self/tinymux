@@ -1693,7 +1693,7 @@ void do_joinchannel(const dbref player, struct channel* ch)
     {
         UTF8 *messNormal, *messNoComtitle;
         BuildChannelMessage((ch->type & CHANNEL_SPOOF) != 0, ch->header, user,
-                            ch->chan_obj, T(":has joined this channel."), &messNormal,
+                            ch->chan_obj, T(": has joined this channel."), &messNormal,
                             &messNoComtitle);
         SendChannelMessage(player, ch, messNormal, messNoComtitle);
     }
@@ -1713,7 +1713,7 @@ void do_leavechannel(dbref player, struct channel* ch)
         {
             UTF8 *messNormal, *messNoComtitle;
             BuildChannelMessage((ch->type & CHANNEL_SPOOF) != 0, ch->header, user,
-                                ch->chan_obj, T(":has left this channel."), &messNormal,
+                                ch->chan_obj, T(": has left this channel."), &messNormal,
                                 &messNoComtitle);
             SendChannelMessage(player, ch, messNormal, messNoComtitle);
         }
@@ -2262,7 +2262,7 @@ void do_delcomchannel(dbref player, UTF8* channel, bool bQuiet)
                         UTF8 *messNormal, *messNoComtitle;
                         BuildChannelMessage((ch->type & CHANNEL_SPOOF) != 0,
                                             ch->header, user, ch->chan_obj,
-                                            T(":has left this channel."), &messNormal,
+                                            T(": has left this channel."), &messNormal,
                                             &messNoComtitle);
                         SendChannelMessage(player, ch, messNormal, messNoComtitle);
                     }
@@ -2856,7 +2856,7 @@ static void do_comdisconnectraw_notify(const dbref player, UTF8* chan)
     {
         UTF8 *messNormal, *messNoComtitle;
         BuildChannelMessage((ch->type & CHANNEL_SPOOF) != 0, ch->header, cu,
-                            ch->chan_obj, (UTF8*)":has disconnected.", &messNormal,
+                            ch->chan_obj, (UTF8*)": has disconnected.", &messNormal,
                             &messNoComtitle);
         SendChannelMessage(player, ch, messNormal, messNoComtitle);
     }
@@ -2878,7 +2878,7 @@ static void do_comconnectraw_notify(const dbref player, UTF8* chan)
     {
         UTF8 *messNormal, *messNoComtitle;
         BuildChannelMessage((ch->type & CHANNEL_SPOOF) != 0, ch->header, cu,
-                            ch->chan_obj, T(":has connected."), &messNormal,
+                            ch->chan_obj, T(": has connected."), &messNormal,
                             &messNoComtitle);
         SendChannelMessage(player, ch, messNormal, messNoComtitle);
     }
@@ -3516,9 +3516,9 @@ void do_chboot
         UTF8 *mess1, *mess1nct;
         UTF8 *mess2, *mess2nct;
         BuildChannelMessage((ch->type & CHANNEL_SPOOF) != 0, ch->header, user,
-                            ch->chan_obj, T(":boots"), &mess1, &mess1nct);
+                            ch->chan_obj, T(": boots"), &mess1, &mess1nct);
         BuildChannelMessage((ch->type & CHANNEL_SPOOF) != 0, nullptr, vu,
-                            ch->chan_obj, T(":off the channel."), &mess2,
+                            ch->chan_obj, T(": off the channel."), &mess2,
                             &mess2nct);
         UTF8* messNormal = alloc_lbuf("do_chboot.messnormal");
         UTF8* messNoComtitle = alloc_lbuf("do_chboot.messnocomtitle");
