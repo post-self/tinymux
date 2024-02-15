@@ -645,7 +645,8 @@ bool ok_password(const UTF8 *password, const UTF8 **pmsg)
 
 void handle_ears(dbref thing, bool could_hear, bool can_hear)
 {
-    static const UTF8 *poss[5] =
+    return;
+/*    static const UTF8* poss[5] =
     {
         T(""),
         T("its"),
@@ -681,6 +682,7 @@ void handle_ears(dbref thing, bool could_hear, bool can_hear)
         notify_check(thing, thing, *sStr, MSG_ME | MSG_NBR | MSG_LOC | MSG_INV);
         delete sStr;
     }
+*/
 }
 
 // For lack of better place the @switch code is here.

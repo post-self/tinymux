@@ -763,6 +763,9 @@ void notify_check(dbref target, dbref sender, const mux_string &msg, int key)
         {
             msgFinal->import(Moniker(target));
             msgFinal->append_TextPlain(T("> "), 2);
+            if (msg.search(T("\r"))) {
+                msgFinal->append_TextPlain(T("\n"), 1);
+            }
             msgFinal->append(*msg_ns);
             raw_notify(Owner(target), *msgFinal);
         }

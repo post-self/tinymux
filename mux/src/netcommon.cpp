@@ -525,6 +525,8 @@ void queue_write_LEN(DESC *d, const UTF8 *b, size_t n)
 void queue_write(DESC *d, const UTF8 *b)
 {
     queue_write_LEN(d, b, strlen((const char *)b));
+    const UTF8* append = T("\u200C");
+    queue_write_LEN(d, append, strlen((const char*)append));
 }
 
 static const UTF8 *encode_iac(const UTF8 *szString)
