@@ -1,0 +1,15 @@
+mux/game/bin/dbconvert
+*.so
+mux/src/.depend
+*.o
+*.data
+*.log
+*.status
+autoconf.h
+Makefile
+mux/game/bin/netmux
+mux/game/bin/slave
+mux/src/netmux
+mux/src/slave
+mux/src/tools/announce
+mux/src/unsplit
