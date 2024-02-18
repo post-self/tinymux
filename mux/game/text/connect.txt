@@ -1,12 +1,21 @@
-Welcome to TinyMUX
-------------------------------------------------------------------------------
-  "connect <name> <password>" connects you to an existing character.
-  "connect guest" connects you to a guest account if one is prepared.
-  "create <name> <password>" creates a new character.
 
-  "WHO" tells you who is logged in to the game (case sensitive).
-  "QUIT" exits the game and saves your character.
+┌──────────────────────────╖                                 ┌──────────────╖
+│  Lagrange System Prompt  ║                                 │  Connecting  ║
+├──────────────────────────╨─────────────────────────────────┴──────────────╢
+│                                                                           ║
+│    Please note that this is an amorous space; this means adult content    ║
+│    is not restricted to private areas, and minors are not permitted.      ║
+│                                                                           ║
+│    "connect <name> <password>" connects you to an existing character.     ║
+│    "create <name> <password>" creates a new character.                    ║
+│                                                                           ║
+│    Note: If your character name is to have spaces in it, you must         ║
+│    enclose it in "quotes" to clarify where your name begins and ends.     ║
+│    >    create "My Nice Long Name" p@ssw0rd                               ║
+│                                                                           ║
+│    "WHO" tells you who is logged in to the game (case sensitive).         ║
+│                                                                           ║
+│    Once logged in, "help" gives help on specific commands and topics.     ║
+│                                                                           ║
+╘═══════════════════════════════════════════════════════════════════════════╝
 
-  Once logged on, "help" gives help on specific commands, functions, and
-  special topics.  Other 'help' commands include "+help" and "news".
-------------------------------------------------------------------------------

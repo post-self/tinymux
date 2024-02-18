@@ -18,11 +18,526 @@ HELP
   -  To get a list of Comsystem commands:
        help comsys
 
-  -  To get a list of TinyMUX Commands:
-       help commands      (or @list commands)
+  -  To get a list of TinyMUX commands:
+       help commands   (or @list commands)
+
+  -  To get a list of Post-Self commands:
+       help post-self commands
 
   Some of the configuration shown in the help.txt might not be the same as
   the configuration of this MUX.  If you notice any errors, contact an admin.
+
+& POST-SELF COMMANDS
+POST-SELF COMMANDS
+
+  Movement:
+    call       join       put
+
+  Configuration:
+    pronouns   @species
+  
+  Forks:
+    >          fork       merge      quit
+  
+  Information:
+    memo       scan       systime    lwho       intro      wwho       recall
+    peri
+
+  Formatting:
+    bold       uline
+
+  Related Topics: postself functions.
+
+& POST-SELF FUNCTIONS
+POST-SELF FUNCTIONS
+
+  Pronoun Substitution:
+    they()      them()      their()     theirs()    themself()
+    ss()        es()        is()        was()       has()
+
+  Other Functions:
+    systime()   psearch()
+
+  Related Topics: post-self commands.
+
+& CALL
+CALL
+
+  COMMAND: call <player>
+
+  Requests that <player> be teleported to your location.  This command can
+  be used by your own forks and target forks of other players as well.
+
+  <player> must use the join command to accept your request.
+
+  Example:
+    > call A Finger
+    Request sent!
+
+  Related Topics: join, post-self commands.
+
+& JOIN
+JOIN
+
+  COMMAND: join <player>
+
+  Requests that you be teleported to <player>'s location.  This command can
+  be used by your own forks and target forks of other players as well.
+
+  <player> must use the call command to accept your request.
+
+  Example:
+    > join A Finger
+    Request sent!
+
+  Related Topics: call, post-self commands.
+
+& PUT
+PUT
+
+  COMMAND: put <object> in <container>
+
+  Teleports <object> into <container>.  This is useful for organizing your
+  inventory or storing your items at home.
+
+  Related Topics: @teleport, post-self commands.
+
+& PRONOUNS
+PRONOUNS
+
+  pronouns
+  pronouns <preset>
+
+  The first form of this command displays a list of pronoun presets that you
+  can apply to yourself.
+
+  The second form of this command applies <preset> to your character,
+  and displays a test string which you can read to ensure your pronouns are set
+  correctly.
+
+  SINGULAR and PLURAL are special pronoun sets that define what grammar should
+  be used when referring to you.  It determines whether you are referred to
+  with phrases like "Ve is / They is" or "Ey are / She are".
+
+  EPICENE is the inclusive pronoun "They / Them".
+  NEUTER is the object pronoun "It / Its".
+  ELVERSON is the neopronoun "Ey / Em".
+  SPIVAK is the neopronoun "E / Em".
+  VERS is the neopronoun "Ve / Ver".
+  INTERSEX is the neopronoun "Shi / Hir".
+  FAE is the neopronoun "Fae / Faer".
+
+  Related Topics: examine, @set, post-self functions, post-self commands.
+
+
+& @species
+@SPECIES
+
+  COMMAND: @species <text>
+  ATTRIBUTE: Species
+
+  This command sets your Species attribute to <text>. This is what is displayed
+  in the Species column when using the lwho command.
+  
+  Related Topics: lwho, post-self commands.
+
+& >
+>
+
+  > <fork> = <command>
+  > <command>
+
+  The first form of this command performs <command> as if it had been executed
+  by <fork>.
+
+  The second form of this command works exactly as the first form of this
+  command,  except that <fork> is assumed to be the last fork controlled.
+
+  A fork is defined as any puppet you own who shares your name followed by the
+  # symbol and a unique tag.
+
+  Related Topics: fork, puppets, @force, post-self commands.
+
+& fork
+FORK
+
+  fork <tag>
+  fork
+
+  The first form of this command creates a new puppet by copying most of your
+  attributes and placing them in the room with you. Their name will be your own
+  followed by the # symbol and <tag>.
+
+  The second form of this command works the same, except that <tag> is the last
+  eight digits of the fork's UUID.
+
+  Related Topics: >, puppets, @force, post-self commands.
+
+& merge
+MERGE
+
+  COMMAND: merge
+
+  Sends a memory merge request to the fork's down-tree. This command must be
+  executed by a puppet.  To merge memories with another character, contact
+  a Wizard.
+
+  Related Topics: >, fork, Wizards, post-self commands.
+
+& quit
+QUIT
+
+  quit
+  quit 1
+
+  The first form of this command sends a memory merge request to the fork's
+  down-tree and then destroys the instance.  This command is the same as
+  writing "merge" followed by "@destroy/instant me".
+  
+  The second form of this command behaves the same,  but alters the output to
+  describe the down-tree as having bubbled up with the selected fork.
+
+  This command must be executed by a puppet.
+
+  Related Topics: >, fork, merge, post-self commands.
+
+& memo
+MEMO
+
+  memo <text>
+  memo
+
+  The first form of this command saves a timestamped note to your memory, which
+  will be inherited by future forks and included in memory merge requests.
+
+  The second form of this command lists all notes stored this way in
+  chronological order.
+
+  Related Topics: merge, quit, post-self commands.
+
+& scan
+SCAN
+
+  COMMAND: scan
+
+  Displays a list of objects you own that are missing recommended attributes.
+  It is encouraged that you use the help command to identify and correct these
+  missing attributes.  This command is especially useful for preparing a public
+  building project for publication.
+
+  Related Topics: @find, @search, post-self commands.
+
+& systime
+SYSTIME
+
+  COMMAND: systime
+
+  This command displays the current time in-character.
+
+  Example:
+    > systime
+    279+267.81
+
+  Related Topics: systime(), post-self commands.
+
+& lwho
+LWHO
+
+  COMMAND: lwho
+
+  This command displays a list of players and forks in the current room.
+  The pronouns,  species,  and idle time of each character is displayed.
+
+  Related Topics: @species, post-self commands.
+
+& intro
+INTRO
+
+  intro
+  intro <name>
+
+  The first form of this command lists all of the introductory help documents.
+
+  The second form of this command displays the document that matches <name>.
+
+  Related Topics: post-self commands.
+
+& wwho
+WWHO
+
+  COMMAND: wwho
+
+  This command displays a list of players,  including their locations, if they
+  are not UNFINDABLE,
+
+  Related Topics: UNFINDABLE, post-self commands.
+
+& recall
+RECALL
+
+  COMMAND: recall <text>
+
+  This command lists all of your memories that contain <text>.
+
+  Related Topics: memo, merge, post-self commands.
+
+& peri
+PERI
+
+  peri <field> = <data>
+  peri <target>
+  peri
+
+  The first form of this command sets your <field> to <data> in the public
+  Perisystem Architecture.
+
+  The second form of this command displays <target>'s public information.
+
+  The third form of this command displays a list of valid fields.
+
+  Related Topics: post-self commands.
+
+& bold
+BOLD
+
+  FUNCTION: bold(<text>)
+
+  This function returns <text> in bold.  This is identical to writing
+  ansi(h, <text>).
+
+  Related Topics: ansi(), post-self commands.
+
+& uline
+ULINE
+
+  FUNCTION: uline(<text>)
+
+  This function returns <text> with an underline.  This is identical to writing
+  ansi(u, <text>).
+
+  Related Topics: ansi(), post-self commands.
+
+& they()
+THEY()
+
+  FUNCTION: they(<object>[,<capitalize>])
+
+  This function returns the objective pronoun defined at <object>/GENDER/OBJ
+  and capitalizes the first character if <capitalize> evaluates as true.
+
+  Normally, this will return words such as "he", "she", or "they".
+
+  Examples:
+    > say Did you know that [they(Gandalf)] defeated Sauron?
+    Did you know that he defeated Sauron?
+
+    > say [they(Gandalf, 1)] dropped the ring!
+    He dropped the ring!
+
+  Related Topics: post-self functions.
+
+& them()
+THEM()
+
+  FUNCTION: them(<object>[,<capitalize>])
+
+  This function returns the subjective pronoun defined at <object>/GENDER/SUB
+  and capitalizes the first character if <capitalize> evaluates as true.
+
+  Normally, this will return words such as "him", "her", or "them".
+
+  Examples:
+    > say I lost track of [them(Gandalf)]!
+    I lost track of him!
+
+    > say [them(Gandalf, 1)], lost I have.
+    Them, lost I have.
+
+  Related Topics: post-self functions.
+
+& their()
+THEIR()
+
+  FUNCTION: their(<object>[,<capitalize>])
+
+  This function returns the possessive pronoun defined at <object>/GENDER/POSS
+  and capitalizes the first character if <capitalize> evaluates as true.
+
+  Normally, this will return words such as "his", "her", or "their".
+
+  Examples:
+    > say Sauron was once [their(Gandalf)] friend.
+    Sauron was once his friend.
+
+    > say [their(Gandalf, 1)] death was tragic.
+    His death was tragic.
+
+  Related Topics: post-self functions.
+
+& theirs()
+THEIRS()
+
+  FUNCTION: theirs(<object>[,<capitalize>])
+
+  This function returns the absolute possessive pronoun defined at
+  <object>/GENDER/APOSS and capitalizes the first character if <capitalize>
+  evaluates as true.
+
+  Normally, this will return words such as "his", "hers", or "theirs".
+
+  Examples:
+    > say The staff was [theirs(Gandalf)].
+    The staff was his.
+
+    > say [theirs(Gandalf, 1)]? I don't remember that!
+    His? I don't remember that!
+
+  Related Topics: post-self functions.
+
+& themself()
+THEMSELF()
+
+  FUNCTION: themself(<object>[,<capitalize>])
+
+  This function returns the reflexive pronoun defined at <object>/GENDER/REFL
+  and capitalizes the first character if <capitalize> evaluates as true.
+
+  Normally, this will return words such as "himself", "herself", or "themself".
+
+  Examples:
+    > say Gandalf sacrificed [themself(Gandalf)] on the bridge.
+    Gandalf sacrificed himself on the bridge.
+
+    > say [themself(Gandalf, 1)]? For what?
+    Himself? For what?
+
+  Related Topics: post-self functions.
+
+& ss()
+SS()
+
+  FUNCTION: ss(<object>[,<capitalize>])
+
+  This function returns the conjugation defined at <object>/GENDER/SS
+  and capitalizes the first character if <capitalize> evaluates as true.
+
+  Normally, this will return either "s" or an empty string.
+
+  Examples:
+    > say He walk[ss(Gandalf)] his dog.
+    He walks his dog.
+
+    > say They live[ss(Echo)] as a dog.
+    They live as a dog.
+
+  Related Topics: post-self functions.
+
+& es()
+ES()
+
+  FUNCTION: es(<object>[,<capitalize>])
+
+  This function returns the conjugation defined at <object>/GENDER/ES
+  and capitalizes the first character if <capitalize> evaluates as true.
+
+  Normally, this will return either "es" or an empty string.
+
+  Examples:
+    > say He watch[es(Gandalf)] the football game.
+    He watches the football game.
+
+    > say They watch[es(Echo)] the football game.
+    They watch the football game.
+
+  Related Topics: post-self functions.
+
+& is()
+IS()
+
+  FUNCTION: is(<object>[,<capitalize>])
+
+  This function returns the conjugation defined at <object>/GENDER/IS
+  and capitalizes the first character if <capitalize> evaluates as true.
+
+  Normally, this will return either "is" or "are".
+
+  Examples:
+    > say He [is(Gandalf)] a grey wizard.
+    He is a grey wizard.
+
+    > say They [is(Echo)] a robot dog.
+    They are a robot dog.
+
+  Related Topics: post-self functions.
+
+& was()
+WAS()
+
+  FUNCTION: was(<object>[,<capitalize>])
+
+  This function returns the conjugation defined at <object>/GENDER/WAS
+  and capitalizes the first character if <capitalize> evaluates as true.
+
+  Normally, this will return either "was" or "were".
+
+  Examples:
+    > say He [was(Gandalf)] the greatest wizard of all time.
+    He was the greatest wizard of all time.
+
+    > say They [was(Echo)] the puppiest robot of all time.
+    They were the puppiest robot of all time.
+
+  Related Topics: post-self functions.
+
+& has()
+HAS()
+
+  FUNCTION: has(<object>[,<capitalize>])
+
+  This function returns the conjugation defined at <object>/GENDER/HAS
+  and capitalizes the first character if <capitalize> evaluates as true.
+
+  Normally, this will return either "has" or "have".
+
+  Examples:
+    > say He [has(Gandalf)] a long beard.
+    He has a long beard.
+
+    > say They [has(Echo)] a cool jacket.
+    They have a cool jacket.
+
+  Related Topics: post-self functions.
+
+& systime()
+SYSTIME()
+
+  FUNCTION: systime([<timestamp>])
+
+  This function converts <timestamp>,  the number of seconds since 01/01/1970,
+  into Systime.  If <timestamp> is not defined,  it returns the current
+  in-character time instead.
+
+  Examples:
+    > think systime()
+    279+268.46
+
+    > think systime(4859740800)
+    0+1.00
+
+  Related Topics: systime, secs(), post-self functions.
+
+& psearch()
+
+  FUNCTION: psearch(<target>)
+
+  This function searches for a player or puppet named <target>.  It will also
+  accept a DbRef.  Matches are performed case-insensitively.  This function
+  prefers exact matches,  but will search for partial matches as well.
+
+  If no match is found,  it returns #-1 *NO MATCH*.
+  If multiple matches are equally preferrable,  it returns #-2 *AMBIGUOUS*.
+
+  Related Topics: pfind(), pmatch(), post-self functions.
 
 & "
 "
@@ -8207,7 +8722,7 @@ INFO
     Patches: WOD_REALMS
     ### End INFO
 
-  Related Topics: QUIT, WHO, version.
+  Related Topics: WHO, version.
 
 & INHERIT
 INHERIT
@@ -9252,8 +9767,6 @@ LOGOUT
 
   Disconnects you from your character without breaking the network connection
   to the game.  You may then log in to another character.
-
-  Related Topics: quit.
 
 & LOOK
 LOOK
@@ -11151,15 +11664,6 @@ QUIET
   set on an object, only that object will not relay its messages.
 
   Related Topics:
-
-& QUIT
-QUIT
-
-  COMMAND: quit
-
-  Logs you out and disconnects you from the game.
-
-  Related Topics: logout.
 
 & R()
 R()

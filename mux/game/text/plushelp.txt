@@ -286,11 +286,11 @@ Out of Character speech:
 PLACES
 
   SYNTAX:  Mv from <#> to <#>          Moves a vacancy from one place to another.
-           Join <place name>           Puts you at <place name>
-           Join at #<num>              Puts you at place #<num>.
-           Join with <name>            Puts you at the place with <name>.
+           Settle <place name>           Puts you at <place name>
+           Settle at #<num>              Puts you at place #<num>.
+           Settle with <name>            Puts you at the place with <name>.
            Depart                      Removes you from your place.
-           sit *                        Alias for Join.
+           sit *                        Alias for Settle.
            Depart                      Removes you from your place.
            Places                      Lists who's present at all places.
            Place <num>                 Lists who's present at place <num>.
