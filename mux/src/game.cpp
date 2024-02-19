@@ -761,13 +761,15 @@ void notify_check(dbref target, dbref sender, const mux_string &msg, int key)
               || (  targetloc != Location(Owner(target))
                  && targetloc != Owner(target))))
         {
-            msgFinal->import(Moniker(target));
+            UTF8* buff = atr_get("puppet.prefix", target, A_PREFIX, &aowner, &aflags);
+            const UTF8* prefix = (*buff ? buff : Moniker(target));
+
+            msgFinal->import(prefix);
             msgFinal->append_TextPlain(T("> "), 2);
             //if (msg.search(T("\r"))) {
             //    msgFinal->append_TextPlain(T("\n"), 1);
             //}
-            
-            msgFinal->append(replace_string(T("\n"), tprintf(T("\n%s> "), Moniker(target)), msg.export_TextConverted(Ansi(Owner(target)), NoBleed(Owner(target)), Color256(Owner(target)), Html(Owner(target)))));
+            msgFinal->append(replace_string(T("\n"), tprintf(T("\n%s> "), prefix), msg.export_TextConverted(Ansi(Owner(target)), NoBleed(Owner(target)), Color256(Owner(target)), Html(Owner(target)))));
 
             //msgFinal->append(*msg_ns);
             raw_notify(Owner(target), *msgFinal);
