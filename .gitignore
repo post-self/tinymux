@@ -15,14 +15,6 @@ mux/src/unsplit
 mux/src/.vs/*
 *.so~
 *.vcxproj.user
-mux/game/data/*
-!mux/game/data/.gitattributes
-!mux/game/data/db_check
-!mux/game/data/db_load
-!mux/game/data/db_load.bat
-!mux/game/data/db_unload
-!mux/game/data/db_unload.bat
-!mux/game/data/netmux.db
 *.pid
 mux/src/modules/x64/*
 mux/src/x64/*
@@ -30,3 +22,7 @@ mux/src/packages/*
 mux/src/netmux~
 UpdateLive
 mux/src/Hotmake
+*.db
+*.dir
+*.pag
+*.db.*
