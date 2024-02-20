@@ -26,3 +26,6 @@ mux/src/Hotmake
 *.dir
 *.pag
 *.db.*
+.vs/*
+mux/src/.vscode/settings.json
+mux/src/.vscode/tasks.json
