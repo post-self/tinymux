@@ -6,48 +6,31 @@
  * since being included in MUX.
  */
 
+#include <string>
 #include "copyright.h"
 #include "autoconf.h"
 #include "config.h"
 #include "externs.h"
+#include <pcre.h>
 
-const UTF8 *DASH_LINE =
-    T("\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93");
+const UTF8 *DASH_LINE_TOP =
+    T("┌────────────────────────────────────────────────────────────────────────────╖");
+
+const UTF8 *DASH_LINE_MIDDLE =
+    T("├────────────────────────────────────────────────────────────────────────────╢");
+
+const UTF8 *DASH_LINE_BOTTOM =
+    T("╘════════════════════════════════════════════════════════════════════════════╝");
 
 const char *MAIL_LINE =
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93"
+      "┌──────────────────────────────"
       "   MAIL: %s   "
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93";
+      "──────────────────────────────╖";
 
 const char *FOLDER_LINE =
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-        "   MAIL: Folder %d   "
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93"
-      "\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93\xE2\x80\x93";
+      "┌────────────────────────────"
+      "   MAIL: Folder %d   "
+      "────────────────────────────╖";
 
 #define SIZEOF_MALIAS 13
 #define WIDTHOF_MALIASDESC 40
@@ -1512,30 +1495,60 @@ static void do_mail_read(dbref player, UTF8 *arg1, UTF8 *arg2)
                 safe_str(MessageFetch(mp->number), buff, &bp);
                 *bp = '\0';
 
-                raw_notify(player, (UTF8 *)DASH_LINE);
+                raw_notify(player, (UTF8 *)DASH_LINE_TOP);
                 status = status_string(mp);
                 names = make_namelist(player, mp->tolist);
 
                 UTF8 szFromName[MBUF_SIZE];
-                trimmed_name(mp->from, szFromName, 16, 16, 0);
+                trimmed_name(mp->from, szFromName, PLAYER_NAME_LIMIT, PLAYER_NAME_LIMIT, 0);
 
                 UTF8 szSubjectBuffer[MBUF_SIZE];
                 StripTabsAndTruncate(mp->subject, szSubjectBuffer, MBUF_SIZE-1, 65);
 
-                raw_notify(player, tprintf(T("%-3d         From:  %s  At: %-25s  %s\r\nFldr   : %-2d Status: %s\r\nTo     : %-65s\r\nSubject: %s"),
-                               i, szFromName,
-                               mp->time,
-                               (Connected(mp->from) &&
-                               (!Hidden(mp->from) || See_Hidden(player))) ?
-                               " (Conn)" : "      ", folder,
-                               status,
-                               names,
-                               szSubjectBuffer));
+                raw_notify(player, tprintf(T("│ %-3d          From  : %-45s  %-6s ║\r\n│ Folder : %-2d  Status: %-22s  At: %-25s ║\r\n│ To     : %-65s ║\r\n│ Subject: %-65s ║"),
+                    i,
+                    szFromName,
+                    (Connected(mp->from) &&
+                    (!Hidden(mp->from) || See_Hidden(player))) ?
+                    "(Conn)" : "",
+                    folder,
+                    status,
+                    mp->time,
+                    names,
+                    szSubjectBuffer));
                 free_lbuf(names);
                 free_lbuf(status);
-                raw_notify(player, (UTF8 *)DASH_LINE);
-                raw_notify(player, buff);
-                raw_notify(player, (UTF8 *)DASH_LINE);
+                raw_notify(player, (UTF8 *)DASH_LINE_MIDDLE);
+                
+                const int ovecsize = 3 * 3;
+                int ovec[ovecsize];
+                const char *errptr;
+                int erroffset;
+                pcre *re = pcre_compile("(){0,74}", PCRE_UTF8|PCRE_MULTILINE, &errptr, &erroffset, nullptr);
+                int offset = 0;
+                int rc;
+                int i = 100;
+                
+                UTF8 *wrap_buffer = alloc_lbuf("mail.readwrap");
+                linewrap_general(
+                    buff,
+                    static_cast<LBUF_OFFSET>(74),
+                    wrap_buffer,
+                    LBUF_SIZE,
+                    T("│ "),
+                    static_cast<LBUF_OFFSET>(2),
+                    T(" ║"),
+                    static_cast<LBUF_OFFSET>(2),
+                    CJC_LJUST,
+                    0,
+                    T("\r\n"),
+                    mux_cursor(2, 2),
+                    74
+                );
+
+                raw_notify(player, wrap_buffer);
+
+                raw_notify(player, (UTF8 *)DASH_LINE_BOTTOM);
                 if (Unread(mp))
                 {
                     // Mark message as read.
@@ -1608,7 +1621,7 @@ static void do_mail_review(dbref player, UTF8 *name, UTF8 *msglist)
             {
                 i++;
 
-                trimmed_name(mp->from, szFromName, 16, 16, 0);
+                trimmed_name(mp->from, szFromName, PLAYER_NAME_LIMIT, PLAYER_NAME_LIMIT, 0);
 
                 StripTabsAndTruncate(mp->subject, szSubjectBuffer, MBUF_SIZE-1, 25);
                 size_t nSize = MessageFetchSize(mp->number);
@@ -1619,7 +1632,7 @@ static void do_mail_review(dbref player, UTF8 *name, UTF8 *msglist)
                                szSubjectBuffer));
             }
         }
-        raw_notify(player, (UTF8 *)DASH_LINE);
+        raw_notify(player, (UTF8 *)DASH_LINE_BOTTOM);
     }
     else
     {
@@ -1639,11 +1652,11 @@ static void do_mail_review(dbref player, UTF8 *name, UTF8 *msglist)
                     UTF8 *status = status_string(mp);
                     const UTF8 *str = MessageFetch(mp->number);
 
-                    trimmed_name(mp->from, szFromName, 16, 16, 0);
+                    trimmed_name(mp->from, szFromName, PLAYER_NAME_LIMIT, PLAYER_NAME_LIMIT, 0);
 
                     StripTabsAndTruncate(mp->subject, szSubjectBuffer, MBUF_SIZE-1, 65);
 
-                    raw_notify(player, (UTF8 *)DASH_LINE);
+                    raw_notify(player, (UTF8 *)DASH_LINE_TOP);
                     raw_notify(player, tprintf(T("%-3d         From:  %s  At: %-25s  %s\r\nFldr   : %-2d Status: %s\r\nSubject: %s"),
                                    i, szFromName,
                                    mp->time,
@@ -1652,9 +1665,9 @@ static void do_mail_review(dbref player, UTF8 *name, UTF8 *msglist)
                                    " (Conn)" : "      ", 0,
                                    status, szSubjectBuffer));
                     free_lbuf(status);
-                    raw_notify(player, (UTF8 *)DASH_LINE);
+                    raw_notify(player, (UTF8 *)DASH_LINE_MIDDLE);
                     raw_notify(player, str);
-                    raw_notify(player, (UTF8 *)DASH_LINE);
+                    raw_notify(player, (UTF8 *)DASH_LINE_BOTTOM);
                 }
             }
         }
@@ -1770,18 +1783,18 @@ static void do_mail_list(dbref player, UTF8 *arg1, UTF8 *arg2, bool sub)
                 size_t nSize = MessageFetchSize(mp->number);
 
                 UTF8 szFromName[MBUF_SIZE];
-                trimmed_name(mp->from, szFromName, 16, 16, 0);
+                trimmed_name(mp->from, szFromName, PLAYER_NAME_LIMIT, PLAYER_NAME_LIMIT, 0);
 
                 if (sub)
                 {
                     StripTabsAndTruncate(mp->subject, szSubjectBuffer, MBUF_SIZE-1, 25);
 
-                    raw_notify(player, tprintf(T("[%s] %-3d (%4d) From: %s Sub: %s"),
+                    raw_notify(player, tprintf(T("│ [%-9s] %-3d (%4d) From: %-22s Sub: %-17s ║"),
                         status_chars(mp), i, nSize, szFromName, szSubjectBuffer));
                 }
                 else
                 {
-                    raw_notify(player, tprintf(T("[%s] %-3d (%4d) From: %s At: %s %s"),
+                    raw_notify(player, tprintf(T("│ [%-9s] %-3d (%4d) From: %-22s At: %-25s %-4s ║"),
                         status_chars(mp), i, nSize, szFromName, time,
                             ((Connected(mp->from) && (!Hidden(mp->from) || See_Hidden(player))) ? "Conn" : " ")));
                 }
@@ -1789,7 +1802,7 @@ static void do_mail_list(dbref player, UTF8 *arg1, UTF8 *arg2, bool sub)
             }
         }
     }
-    raw_notify(player, (UTF8 *)DASH_LINE);
+    raw_notify(player, (UTF8 *)DASH_LINE_BOTTOM);
 
     if (folder != original_folder)
     {
@@ -4331,14 +4344,14 @@ static void do_mail_proof(dbref player)
                           MBUF_SIZE-1, 35);
 
     UTF8 szFromName[MBUF_SIZE];
-    trimmed_name(player, szFromName, 16, 16, 0);
+    trimmed_name(player, szFromName, PLAYER_NAME_LIMIT, PLAYER_NAME_LIMIT, 0);
 
-    raw_notify(player, (UTF8 *)DASH_LINE);
+    raw_notify(player, (UTF8 *)DASH_LINE_TOP);
     raw_notify(player, tprintf(T("From:  %s  Subject: %s\nTo: %s"),
             szFromName, szSubjectBuffer, names));
-    raw_notify(player, (UTF8 *)DASH_LINE);
+    raw_notify(player, (UTF8 *)DASH_LINE_MIDDLE);
     raw_notify(player, pMailMsg);
-    raw_notify(player, (UTF8 *)DASH_LINE);
+    raw_notify(player, (UTF8 *)DASH_LINE_BOTTOM);
     free_lbuf(pMailMsg);
     free_lbuf(names);
     free_lbuf(mailto);
@@ -5129,7 +5142,7 @@ static void ListMailInFolderNumber(dbref player, int folder_num, UTF8 *msglist)
                 size_t nSize = MessageFetchSize(mp->number);
 
                 UTF8 szFromName[MBUF_SIZE];
-                trimmed_name(mp->from, szFromName, 16, 16, 0);
+                trimmed_name(mp->from, szFromName, PLAYER_NAME_LIMIT, PLAYER_NAME_LIMIT, 0);
 
                 StripTabsAndTruncate(mp->subject, szSubjectBuffer,
                         MBUF_SIZE-1, 25);
@@ -5141,7 +5154,7 @@ static void ListMailInFolderNumber(dbref player, int folder_num, UTF8 *msglist)
             }
         }
     }
-    raw_notify(player, (UTF8 *)DASH_LINE);
+    raw_notify(player, (UTF8 *)DASH_LINE_BOTTOM);
 
     set_player_folder(player, original_folder);
 
