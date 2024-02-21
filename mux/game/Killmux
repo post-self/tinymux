@@ -1,0 +1,4 @@
+#!/bin/bash
+kill -9 `cat netmux.pid`
+rm -f netmux.pid
+
