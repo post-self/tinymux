@@ -1088,8 +1088,7 @@ dbref lookup_player(dbref doer, UTF8 *name, bool check_who)
 
     bool bAlias = false;
     thing = lookup_player_name(name, bAlias);
-    if (  NOTHING == thing
-       && check_who)
+    if (NOTHING == thing && check_who)
     {
         thing = find_connected_name(doer, name);
         if (Hidden(thing))
@@ -1098,21 +1097,52 @@ dbref lookup_player(dbref doer, UTF8 *name, bool check_who)
         }
     }
 
-    if (NOTHING == thing
-        && check_who)
+    if (NOTHING == thing)
     {
         for (dbref i = 0; i < mudstate.db_top; i++) {
             if (
                 Good_obj(i) &&
-                /*strncmp(
-                    mux_strlwr(p, pCased),
-                    chrName,
-                    lenName
-                ) == 0 &&*/
-                mux_stricmp(name, Name(i)) == 1 &&
+                string_prefix(Name(i), name) == 1 &&
                 has_flag(i, i, T("PUPPET"))
             ) {
-                thing = i;
+                if (thing == NOTHING)
+                {
+                    thing = i;
+                }
+                else
+                {
+                    thing = AMBIGUOUS;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (NOTHING == thing)
+    {
+        for (dbref i = 0; i < mudstate.db_top; i++) {
+            if (Good_obj(i))
+            {
+                UTF8 *tag = (UTF8 *)Name(i);
+                while (tag[0] != '\0' && tag[0] != '#')
+                {
+                    tag++;
+                }
+                tag++;
+                if (
+                    string_prefix(Name(i), tag) == 1 &&
+                    has_flag(i, i, T("PUPPET"))
+                ) {
+                    if (thing == NOTHING)
+                    {
+                        thing = i;
+                    }
+                    else
+                    {
+                        thing = AMBIGUOUS;
+                        break;
+                    }
+                }
             }
         }
     }

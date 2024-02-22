@@ -1038,7 +1038,9 @@ void do_pemit_single
     int pemit_flags,
     UTF8 *recipient,
     int chPoseType,
-    UTF8 *message
+    UTF8 *message,
+    dbref *aPlayers = nullptr,
+    int nPlayers = 0
 );
 void do_say(dbref executor, dbref caller, dbref enactor, int eval, int key,
                    UTF8 *message, const UTF8 *cargs[], int ncargs);
