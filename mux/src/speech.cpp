@@ -116,7 +116,7 @@ void do_say(dbref executor, dbref caller, dbref enactor, int eval, int key, UTF8
     say_flags = key & (SAY_NOEVAL | SAY_HERE | SAY_ROOM | SAY_HTML);
     key &= ~(SAY_NOEVAL | SAY_HERE | SAY_ROOM | SAY_HTML);
 
-    char noSpaceChars[] = { '\'', '#', ':' };
+    char noSpaceChars[] = { '\'', '#', ':', '-' };
     bool noSpaceCharFound = false;
 
     if (key == SAY_PREFIX)
@@ -885,7 +885,7 @@ void do_page
         pMessage = newMessage;
     }
 
-    char noSpaceChars[] = { '\'', '#', ':' };
+    char noSpaceChars[] = { '\'', '#', ':', '-' };
     bool noSpaceCharFound = false;
     
     switch (pageMode)
@@ -1147,7 +1147,7 @@ void do_pemit_single
         }
         loc = where_is(target);
 
-        char noSpaceChars[] = { '\'', '#', ':' };
+        char noSpaceChars[] = { '\'', '#', ':', '-' };
         bool noSpaceCharFound = false;
 
         switch (key)
@@ -1727,7 +1727,7 @@ void do_pemit_whisper
 
     int chPoseType = *message;
 
-    char noSpaceChars[] = { '\'', '#', ':' };
+    char noSpaceChars[] = { '\'', '#', ':', '-' };
     bool noSpaceCharFound = false;
 
     if (1 == nPlayers

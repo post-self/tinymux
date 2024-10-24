@@ -1292,7 +1292,7 @@ static void BuildChannelMessage
     UTF8* saystring = nullptr;
     UTF8* newPose = nullptr;
 
-    char noSpaceChars[] = { '\'', '#', ':' };
+    char noSpaceChars[] = { '\'', '#', ':', '-' };
     bool noSpaceCharFound = false;
 
     switch (pPose[0])
