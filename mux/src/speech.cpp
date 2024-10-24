@@ -116,6 +116,9 @@ void do_say(dbref executor, dbref caller, dbref enactor, int eval, int key, UTF8
     say_flags = key & (SAY_NOEVAL | SAY_HERE | SAY_ROOM | SAY_HTML);
     key &= ~(SAY_NOEVAL | SAY_HERE | SAY_ROOM | SAY_HTML);
 
+    char noSpaceChars[] = { '\'', '#', ':' };
+    bool noSpaceCharFound = false;
+
     if (key == SAY_PREFIX)
     {
         switch (message[0])
@@ -131,7 +134,22 @@ void do_say(dbref executor, dbref caller, dbref enactor, int eval, int key, UTF8
             {
                 message++;
             }
-            key = SAY_POSE;
+            for (int i = 0; i < sizeof noSpaceChars; i++)
+            {
+                if (message[0] == noSpaceChars[i])
+                {
+                    noSpaceCharFound = true;
+                    break;
+                }
+            }
+            if (noSpaceCharFound)
+            {
+                key = SAY_POSE_NOSPC;
+            }
+            else
+            {
+                key = SAY_POSE;
+            }
             break;
 
         case ';':
@@ -867,6 +885,9 @@ void do_page
         pMessage = newMessage;
     }
 
+    char noSpaceChars[] = { '\'', '#', ':' };
+    bool noSpaceCharFound = false;
+    
     switch (pageMode)
     {
     case 1:
@@ -895,8 +916,16 @@ void do_page
             safe_tprintf_str(omessage, &omp, T("Sensorium (%s): "), aFriendly);
             safe_tprintf_str(imessage, &imp, T("Sensorium (%s): "), aFriendly);
         }
-        safe_tprintf_str(omessage, &omp, T("%s %s"), Moniker(executor), pMessage);
-        safe_tprintf_str(imessage, &imp, T("%s %s"), Moniker(executor), pMessage);
+        for (int i = 0; i < sizeof noSpaceChars; i++)
+        {
+            if (pMessage[0] == noSpaceChars[i])
+            {
+                noSpaceCharFound = true;
+                break;
+            }
+        }
+        safe_tprintf_str(omessage, &omp, T("%s%s%s"), Moniker(executor), noSpaceCharFound ? T("") : T(" "), pMessage);
+        safe_tprintf_str(imessage, &imp, T("%s%s%s"), Moniker(executor), noSpaceCharFound ? T("") : T(" "), pMessage);
         break;
 
     case 3:
@@ -1118,6 +1147,9 @@ void do_pemit_single
         }
         loc = where_is(target);
 
+        char noSpaceChars[] = { '\'', '#', ':' };
+        bool noSpaceCharFound = false;
+
         switch (key)
         {
         case PEMIT_PEMIT:
@@ -1161,7 +1193,15 @@ void do_pemit_single
                 {
                     message++;
                 }
-                whisper_pose(player, target, message, true, from);
+                for (int i = 0; i < sizeof noSpaceChars; i++)
+                {
+                    if (message[0] == noSpaceChars[i])
+                    {
+                        noSpaceCharFound = true;
+                        break;
+                    }
+                }
+                whisper_pose(player, target, message, !noSpaceCharFound, from);
                 break;
 
             case ';':
@@ -1242,7 +1282,15 @@ void do_pemit_single
             {
                 message = newMessage;
             }
-            p = tprintf(T("%s %s"), Moniker(target), message);
+            for (int i = 0; i < sizeof noSpaceChars; i++)
+            {
+                if (message[0] == noSpaceChars[i])
+                {
+                    noSpaceCharFound = true;
+                    break;
+                }
+            }
+            p = tprintf(T("%s%s%s"), Moniker(target), noSpaceCharFound ? T("") : T(" "), message);
             notify_all_from_inside(loc, player, p);
             if (newMessage)
             {
@@ -1679,6 +1727,9 @@ void do_pemit_whisper
 
     int chPoseType = *message;
 
+    char noSpaceChars[] = { '\'', '#', ':' };
+    bool noSpaceCharFound = false;
+
     if (1 == nPlayers
         && Good_obj(aPlayers[0]))
     {
@@ -1695,7 +1746,15 @@ void do_pemit_whisper
                 {
                     i++;
                 }
-                notify(executor, tprintf(T("Whisper (%s): %s %s"), Moniker(aPlayers[0]), Moniker(executor), &message[i]));
+                for (int i = 0; i < sizeof noSpaceChars; i++)
+                {
+                    if (message[0] == noSpaceChars[i])
+                    {
+                        noSpaceCharFound = true;
+                        break;
+                    }
+                }
+                notify(executor, tprintf(T("Whisper (%s): %s%s%s"), Moniker(aPlayers[0]), noSpaceCharFound ? T("") : T(" "), Moniker(executor), &message[i]));
                 break;
             }
 

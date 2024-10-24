@@ -1292,6 +1292,9 @@ static void BuildChannelMessage
     UTF8* saystring = nullptr;
     UTF8* newPose = nullptr;
 
+    char noSpaceChars[] = { '\'', '#', ':' };
+    bool noSpaceCharFound = false;
+
     switch (pPose[0])
     {
     case ':':
@@ -1300,12 +1303,23 @@ static void BuildChannelMessage
         {
             pPose++;
         }
+        for (int i = 0; i < sizeof noSpaceChars; i++)
+        {
+            if (pPose[0] == noSpaceChars[i])
+            {
+                noSpaceCharFound = true;
+                break;
+            }
+        }
         newPose = modSpeech(bChannelSpeechMod ? ch_obj : user->who, pPose, true, T("channel/pose"));
         if (newPose)
         {
             pPose = newPose;
         }
-        safe_chr(' ', *messNormal, &mnptr);
+        if (!noSpaceCharFound)
+        {
+            safe_chr(' ', *messNormal, &mnptr);
+        }
         safe_str(pPose, *messNormal, &mnptr);
         if (!bSpoof)
         {
