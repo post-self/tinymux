@@ -1353,28 +1353,28 @@ static void BuildChannelMessage
         {
             safe_chr(' ', *messNormal, &mnptr);
             safe_str(saystring, *messNormal, &mnptr);
-            safe_str(T(" \xE2\x80\x9C"), *messNormal, &mnptr);
+            safe_str(T(" \""), *messNormal, &mnptr);
         }
         else
         {
-            safe_str(T(" says, \xE2\x80\x9C"), *messNormal, &mnptr);
+            safe_str(T(" says, \""), *messNormal, &mnptr);
         }
         safe_str(pPose, *messNormal, &mnptr);
-        safe_str(T("\xE2\x80\x9D"), *messNormal, &mnptr);
+        safe_str(T("\""), *messNormal, &mnptr);
         if (!bSpoof)
         {
             if (saystring)
             {
                 safe_chr(' ', *messNoComtitle, &mncptr);
                 safe_str(saystring, *messNoComtitle, &mncptr);
-                safe_str(T(" \xE2\x80\x9C"), *messNoComtitle, &mncptr);
+                safe_str(T(" \""), *messNoComtitle, &mncptr);
             }
             else
             {
-                safe_str(T(" says, \xE2\x80\x9C"), *messNoComtitle, &mncptr);
+                safe_str(T(" says, \""), *messNoComtitle, &mncptr);
             }
             safe_str(pPose, *messNoComtitle, &mncptr);
-            safe_str(T("\xE2\x80\x9D"), *messNoComtitle, &mncptr);
+            safe_str(T("\""), *messNoComtitle, &mncptr);
         }
         break;
     }
