@@ -1,0 +1,2 @@
+#!/bin/bash
+kill -SIGUSR1 `cat netmux.pid`
