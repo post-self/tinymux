@@ -1,0 +1,28 @@
+# Logs
+*.log
+
+# Binaries
+*.o
+*.so
+mux/game/bin/dbconvert
+mux/game/bin/netmux
+mux/game/bin/slave
+
+# Run files
+mux/game/data/netmux.db.old
+mux/game/data/netmux.dir
+mux/game/data/netmux.pag
+mux/game/netmux.pid
+
+# Build files
+mux/src/Makefile
+mux/src/autoconf.h
+mux/src/buildnum.data
+mux/src/config.status
+mux/src/modules/Makefile
+mux/src/modules/autoconf.h
+mux/src/netmux
+mux/src/slave
+mux/src/tools/Makefile
+mux/src/tools/announce
+mux/src/tools/autoconf.h
