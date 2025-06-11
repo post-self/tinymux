@@ -7,12 +7,17 @@
 mux/game/bin/dbconvert
 mux/game/bin/netmux
 mux/game/bin/slave
+mux/src/unsplit
 
 # Run files
 mux/game/data/netmux.db.old
 mux/game/data/netmux.dir
 mux/game/data/netmux.pag
 mux/game/netmux.pid
+mux/game/data/comsys.db
+mux/game/data/mail.db
+mux/game/data/netmux.db.new
+mux/game/shutdown.status
 
 # Build files
 mux/src/Makefile
@@ -26,3 +31,4 @@ mux/src/slave
 mux/src/tools/Makefile
 mux/src/tools/announce
 mux/src/tools/autoconf.h
+mux/src/.depend
