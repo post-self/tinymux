@@ -3,6 +3,7 @@
  *
  */
 
+#include <string>
 #include "copyright.h"
 #include "autoconf.h"
 #include "config.h"
@@ -1263,9 +1264,15 @@ void look_in(dbref player, dbref loc, int key)
         preserve = PushRegisters(MAX_GLOBAL_REGS);
         save_and_clear_global_regs(preserve);
 
+        std::string strLoc = std::to_string(loc);
+        strLoc.insert(0, "#");
+        const char* chrLoc = strLoc.c_str();
+        const UTF8* utfLoc = reinterpret_cast<const uint8_t*>(chrLoc);
+        const UTF8* ParameterList[] = { utfLoc };
+
         mux_exec(NameFormat, LBUF_SIZE-1, FormatOutput, &tPtr, loc, player, player,
             AttrTrace(aflags, EV_FCHECK|EV_EVAL|EV_TOP),
-            0, 0);
+            ParameterList, 1);
         *tPtr = '\0';
 
         restore_global_regs(preserve);
