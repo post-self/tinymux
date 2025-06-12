@@ -1292,16 +1292,34 @@ static void BuildChannelMessage
     UTF8* saystring = nullptr;
     UTF8* newPose = nullptr;
 
+    char noSpaceChars[] = { '\'', '#', ':', '-', ',' };
+    bool noSpaceCharFound = false;
+
     switch (pPose[0])
     {
     case ':':
         pPose++;
+        while (pPose[0] == ' ')
+        {
+            pPose++;
+        }
+        for (int i = 0; i < sizeof noSpaceChars; i++)
+        {
+            if (pPose[0] == noSpaceChars[i])
+            {
+                noSpaceCharFound = true;
+                break;
+            }
+        }
         newPose = modSpeech(bChannelSpeechMod ? ch_obj : user->who, pPose, true, T("channel/pose"));
         if (newPose)
         {
             pPose = newPose;
         }
-        safe_chr(' ', *messNormal, &mnptr);
+        if (!noSpaceCharFound)
+        {
+            safe_chr(' ', *messNormal, &mnptr);
+        }
         safe_str(pPose, *messNormal, &mnptr);
         if (!bSpoof)
         {
@@ -1335,28 +1353,28 @@ static void BuildChannelMessage
         {
             safe_chr(' ', *messNormal, &mnptr);
             safe_str(saystring, *messNormal, &mnptr);
-            safe_str(T(" \xE2\x80\x9C"), *messNormal, &mnptr);
+            safe_str(T(" \""), *messNormal, &mnptr);
         }
         else
         {
-            safe_str(T(" says, \xE2\x80\x9C"), *messNormal, &mnptr);
+            safe_str(T(" says, \""), *messNormal, &mnptr);
         }
         safe_str(pPose, *messNormal, &mnptr);
-        safe_str(T("\xE2\x80\x9D"), *messNormal, &mnptr);
+        safe_str(T("\""), *messNormal, &mnptr);
         if (!bSpoof)
         {
             if (saystring)
             {
                 safe_chr(' ', *messNoComtitle, &mncptr);
                 safe_str(saystring, *messNoComtitle, &mncptr);
-                safe_str(T(" \xE2\x80\x9C"), *messNoComtitle, &mncptr);
+                safe_str(T(" \""), *messNoComtitle, &mncptr);
             }
             else
             {
-                safe_str(T(" says, \xE2\x80\x9C"), *messNoComtitle, &mncptr);
+                safe_str(T(" says, \""), *messNoComtitle, &mncptr);
             }
             safe_str(pPose, *messNoComtitle, &mncptr);
-            safe_str(T("\xE2\x80\x9D"), *messNoComtitle, &mncptr);
+            safe_str(T("\""), *messNoComtitle, &mncptr);
         }
         break;
     }
