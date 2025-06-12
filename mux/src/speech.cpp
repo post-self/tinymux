@@ -895,26 +895,26 @@ void do_page
         //
         if (nValid == 1)
         {
-            safe_tprintf_str(omessage, &omp, T("Sensorium (%s): %s sends a ping."), aFriendly, Moniker(executor));
-            safe_tprintf_str(imessage, &imp, T("Sensorium (%s): %s sends a ping."), aFriendly, Moniker(executor));
+            safe_tprintf_str(omessage, &omp, T("[Message] (%s): %s sends a ping."), aFriendly, Moniker(executor));
+            safe_tprintf_str(imessage, &imp, T("[Message] (%s): %s sends a ping."), aFriendly, Moniker(executor));
         }
         else
         {
-            safe_tprintf_str(omessage, &omp, T("Sensorium %s: %s sends a ping."), aFriendly, Moniker(executor));
-            safe_tprintf_str(imessage, &imp, T("Sensorium %s: %s sends a group-ping."), aFriendly, Moniker(executor));
+            safe_tprintf_str(omessage, &omp, T("[Message] %s: %s sends a ping."), aFriendly, Moniker(executor));
+            safe_tprintf_str(imessage, &imp, T("[Message] %s: %s sends a group-ping."), aFriendly, Moniker(executor));
         }
         break;
 
     case 2:
         if (nValid > 1)
         {
-            safe_tprintf_str(omessage, &omp, T("Sensorium %s: "), aFriendly);
-            safe_tprintf_str(imessage, &imp, T("Sensorium %s: "), aFriendly);
+            safe_tprintf_str(omessage, &omp, T("[Message] %s: "), aFriendly);
+            safe_tprintf_str(imessage, &imp, T("[Message] %s: "), aFriendly);
         }
         else
         {
-            safe_tprintf_str(omessage, &omp, T("Sensorium (%s): "), aFriendly);
-            safe_tprintf_str(imessage, &imp, T("Sensorium (%s): "), aFriendly);
+            safe_tprintf_str(omessage, &omp, T("[Message] (%s): "), aFriendly);
+            safe_tprintf_str(imessage, &imp, T("[Message] (%s): "), aFriendly);
         }
         for (int i = 0; i < sizeof noSpaceChars; i++)
         {
@@ -931,13 +931,13 @@ void do_page
     case 3:
         if (nValid > 1)
         {
-            safe_tprintf_str(omessage, &omp, T("Sensorium %s: "), aFriendly);
-            safe_tprintf_str(imessage, &imp, T("Sensorium %s: "), aFriendly);
+            safe_tprintf_str(omessage, &omp, T("[Message] %s: "), aFriendly);
+            safe_tprintf_str(imessage, &imp, T("[Message] %s: "), aFriendly);
         }
         else
         {
-            safe_tprintf_str(omessage, &omp, T("Sensorium (%s): "), aFriendly);
-            safe_tprintf_str(imessage, &imp, T("Sensorium (%s): "), aFriendly);
+            safe_tprintf_str(omessage, &omp, T("[Message] (%s): "), aFriendly);
+            safe_tprintf_str(imessage, &imp, T("[Message] (%s): "), aFriendly);
         }
         safe_tprintf_str(omessage, &omp, T("%s%s"), Moniker(executor), pMessage);
         safe_tprintf_str(imessage, &imp, T("%s%s"), Moniker(executor), pMessage);
@@ -946,13 +946,13 @@ void do_page
     default:
         if (nValid > 1)
         {
-            safe_tprintf_str(omessage, &omp, T("Sensorium %s: "), aFriendly);
-            safe_tprintf_str(imessage, &imp, T("Sensorium %s: "), aFriendly);
+            safe_tprintf_str(omessage, &omp, T("[Message] %s: "), aFriendly);
+            safe_tprintf_str(imessage, &imp, T("[Message] %s: "), aFriendly);
         }
         else
         {
-            safe_tprintf_str(omessage, &omp, T("Sensorium (%s): "), aFriendly);
-            safe_tprintf_str(imessage, &imp, T("Sensorium (%s): "), aFriendly);
+            safe_tprintf_str(omessage, &omp, T("[Message] (%s): "), aFriendly);
+            safe_tprintf_str(imessage, &imp, T("[Message] (%s): "), aFriendly);
         }
         safe_tprintf_str(omessage, &omp, T("%s says, \"%s\""), Moniker(executor), pMessage);
         safe_tprintf_str(imessage, &imp, T("%s says, \"%s\""), Moniker(executor), pMessage);
@@ -1001,7 +1001,7 @@ static void whisper_pose(dbref player, dbref target, UTF8* message, bool bSpace,
     }
     UTF8* buff = alloc_lbuf("do_pemit.whisper.pose");
     mux_strncpy(buff, Moniker(player), LBUF_SIZE - 1);
-    notify_with_cause(target, player, tprintf(T("Whisper (%s): %s%s%s"), from, Moniker(player), bSpace ? " " : "", message));
+    notify_with_cause(target, player, tprintf(T("[Whisper] (%s): %s%s%s"), from, Moniker(player), bSpace ? " " : "", message));
     free_lbuf(buff);
     if (newMessage)
     {
@@ -1219,7 +1219,7 @@ void do_pemit_single
                     message = newMessage;
                 }
                 notify_with_cause(target, player,
-                    tprintf(T("Whisper (%s): %s says, \"%s\""), from, Moniker(player), message));
+                    tprintf(T("[Whisper] (%s): %s says, \"%s\""), from, Moniker(player), message));
                 if (newMessage)
                 {
                     free_lbuf(newMessage);
@@ -1783,15 +1783,15 @@ void do_pemit_whisper
         switch (chPoseType)
         {
         case ';':
-            notify(executor, tprintf(T("Whisper (%s): %s%s"), aFriendly, Moniker(executor), &message[1]));
+            notify(executor, tprintf(T("[Whisper] (%s): %s%s"), aFriendly, Moniker(executor), &message[1]));
             break;
 
         case ':':
-            notify(executor, tprintf(T("Whisper (%s): %s%s"), aFriendly, Moniker(executor), &message[1]));
+            notify(executor, tprintf(T("[Whisper] (%s): %s%s"), aFriendly, Moniker(executor), &message[1]));
             break;
 
         default:
-            notify(executor, tprintf(T("Whisper (%s): %s says, \"%s\""), aFriendly, Moniker(executor), message));
+            notify(executor, tprintf(T("[Whisper] (%s): %s says, \"%s\""), aFriendly, Moniker(executor), message));
             break;
         }
 
