@@ -116,6 +116,9 @@ void do_say(dbref executor, dbref caller, dbref enactor, int eval, int key, UTF8
     say_flags = key & (SAY_NOEVAL | SAY_HERE | SAY_ROOM | SAY_HTML);
     key &= ~(SAY_NOEVAL | SAY_HERE | SAY_ROOM | SAY_HTML);
 
+    char noSpaceChars[] = { '\'', '#', ':', '-', ',' };
+    bool noSpaceCharFound = false;
+
     if (key == SAY_PREFIX)
     {
         switch (message[0])
@@ -127,9 +130,20 @@ void do_say(dbref executor, dbref caller, dbref enactor, int eval, int key, UTF8
 
         case ':':
             message++;
-            if (*message == ' ')
+            while (message[0] == ' ')
             {
                 message++;
+            }
+            for (int i = 0; i < sizeof noSpaceChars; i++)
+            {
+                if (message[0] == noSpaceChars[i])
+                {
+                    noSpaceCharFound = true;
+                    break;
+                }
+            }
+            if (noSpaceCharFound)
+            {
                 key = SAY_POSE_NOSPC;
             }
             else
@@ -206,22 +220,19 @@ void do_say(dbref executor, dbref caller, dbref enactor, int eval, int key, UTF8
         saystring = modSpeech(executor, messageOrig, false, command);
         if (saystring)
         {
-            notify_saypose(executor, tprintf(T("%s %s \xE2\x80\x9C%s\xE2\x80\x9D"),
-                Moniker(executor), saystring, message));
 #ifdef REALITY_LVLS
-            notify_except_rlevel(loc, executor, executor, tprintf(T("%s %s \xE2\x80\x9C%s\xE2\x80\x9D"), Moniker(executor), saystring, message), MSG_SAYPOSE);
+            notify_except_rlevel(loc, executor, -1, tprintf(T("%s %s \"%s\""), Moniker(executor), saystring, message), MSG_SAYPOSE);
 #else
-            notify_except(loc, executor, executor, tprintf(T("%s %s \xE2\x80\x9C%s\xE2\x80\x9D"), Moniker(executor), saystring, message), MSG_SAYPOSE);
+            notify_all_from_inside_saypose(loc, executor, tprintf(T("%s %s \"%s\""), Moniker(executor), saystring, message));
 #endif
             free_lbuf(saystring);
         }
         else
         {
-            notify_saypose(executor, tprintf(T("You say, \xE2\x80\x9C%s\xE2\x80\x9D"), message));
 #ifdef REALITY_LVLS
-            notify_except_rlevel(loc, executor, executor, tprintf(T("%s says, \xE2\x80\x9C%s\xE2\x80\x9D"), Moniker(executor), message), MSG_SAYPOSE);
+            notify_except_rlevel(loc, executor, executor, tprintf(T("%s says, \"%s\""), Moniker(executor), message), MSG_SAYPOSE);
 #else
-            notify_except(loc, executor, executor, tprintf(T("%s says, \xE2\x80\x9C%s\xE2\x80\x9D"), Moniker(executor), message), MSG_SAYPOSE);
+            notify_all_from_inside_saypose(loc, executor, tprintf(T("%s says, \"%s\""), Moniker(executor), message));
 #endif
         }
         break;
@@ -364,7 +375,7 @@ void do_shout(dbref executor, dbref caller, dbref enactor, int eval, int key,
         loghead = T("ASHOUT");
         logtext1 = T(" ADMIN");
         logsay = T(" yells: ");
-        saystring = T("says, \xE2\x80\x9C");
+        saystring = T("says, \"");
     }
     else if (key & SHOUT_WIZARD)
     {
@@ -372,7 +383,7 @@ void do_shout(dbref executor, dbref caller, dbref enactor, int eval, int key,
         loghead = T("BCAST");
         logtext1 = T(" WIZ");
         logsay = T(" broadcasts: ");
-        saystring = T("says, \xE2\x80\x9C");
+        saystring = T("says, \"");
     }
     else
     {
@@ -380,7 +391,7 @@ void do_shout(dbref executor, dbref caller, dbref enactor, int eval, int key,
         loghead = T("SHOUT");
         logtext1 = T(" WALL");
         logsay = T(" shouts: ");
-        saystring = T("shouts, \xE2\x80\x9C");
+        saystring = T("shouts, \"");
     }
 
     if (bNoTag)
@@ -418,7 +429,7 @@ void do_shout(dbref executor, dbref caller, dbref enactor, int eval, int key,
         bp = buf2;
         safe_str(saystring, buf2, &bp);
         safe_str(message, buf2, &bp);
-        safe_str(T("\xE2\x80\x9D"), buf2, &bp);
+        safe_str(T("\""), buf2, &bp);
         *bp = '\0';
     }
     p = tprintf(T("%s%s%s%s"), prefix, bEmit ? T("") : Moniker(executor),
@@ -531,13 +542,13 @@ static bool page_check(dbref player, dbref target)
     {
         if (Wizard(player))
         {
-            notify(player, tprintf(T("Warning: %s can\xE2\x80\x99t return your page."),
+            notify(player, tprintf(T("Warning: %s can\'t return your page."),
                 Moniker(target)));
             return true;
         }
         else
         {
-            notify(player, tprintf(T("Sorry, %s can\xE2\x80\x99t return your page."),
+            notify(player, tprintf(T("Sorry, %s can\'t return your page."),
                 Moniker(target)));
             return false;
         }
@@ -608,13 +619,25 @@ void do_page
             for (r = st.parse(); r; r = st.parse())
             {
                 dbref target = lookup_player(executor, r, true);
-                if (target != NOTHING)
+
+                if (target == NOTHING)
+                {
+                    init_match(executor, r, NOTYPE);
+                    match_neighbor();
+                    target = match_result();
+                }
+
+                if (target >= 0)
                 {
                     aPlayers[nPlayers++] = target;
                 }
-                else
+                else if (target == AMBIGUOUS)
                 {
-                    notify(executor, tprintf(T("I don\xE2\x80\x99t recognize \xE2\x80\x9C%s\xE2\x80\x9D."), r));
+                    notify(executor, tprintf(T("I found more than one \"%s\"."), trim_spaces((const UTF8 *)r)));
+                }
+                else if (target)
+                {
+                    notify(executor, tprintf(T("I don\'t recognize \"%s\"."), trim_spaces((const UTF8 *)r)));
                 }
             }
 
@@ -631,13 +654,17 @@ void do_page
                 }
 
                 dbref target = lookup_player(executor, p, true);
-                if (target != NOTHING)
+                if (target >= 0)
                 {
                     aPlayers[nPlayers++] = target;
                 }
+                else if (target == AMBIGUOUS)
+                {
+                    notify(executor, tprintf(T("I found more than one \"%s\"."), trim_spaces((const UTF8 *)p)));
+                }
                 else
                 {
-                    notify(executor, tprintf(T("I don\xE2\x80\x99t recognize \xE2\x80\x9C%s\xE2\x80\x9D."), p));
+                    notify(executor, tprintf(T("I don\'t recognize \"%s\"."), trim_spaces((const UTF8 *)p)));
                 }
 
                 if (q)
@@ -663,19 +690,19 @@ void do_page
         int   aflags;
         UTF8 *pLastPage = atr_get("do_page.645", executor, A_LASTPAGE, &aowner, &aflags);
 
-        string_token st(pLastPage, T(" "));
-        UTF8 *p;
+        string_token st(pLastPage, T(","));
+        UTF8* p;
         for (p = st.parse(); p; p = st.parse())
         {
             dbref target = mux_atol(p);
-            if (  Good_obj(target)
-               && isPlayer(target))
+            if (Good_obj(target)
+                && (isPlayer(target) || has_flag(target, target, T("PUPPET"))))
             {
                 aPlayers[nPlayers++] = target;
             }
             else
             {
-                notify(executor, tprintf(T("I don\xE2\x80\x99t recognize #%d."), target));
+                notify(executor, tprintf(T("I don\'t recognize #%d."), target));
                 bModified = true;
             }
         }
@@ -728,9 +755,9 @@ void do_page
         // Update the database.
         //
         ITL itl;
-        UTF8 *pBuff = alloc_lbuf("do_page.lastpage");
-        UTF8 *pBufc = pBuff;
-        ItemToList_Init(&itl, pBuff, &pBufc);
+        UTF8* pBuff = alloc_lbuf("do_page.lastpage");
+        UTF8* pBufc = pBuff;
+        ItemToList_Init(&itl, pBuff, &pBufc, 0, (UTF8)',');
         for (i = 0; i < nPlayers; i++)
         {
             if (  Good_obj(aPlayers[i])
@@ -830,14 +857,13 @@ void do_page
         break;
 
     case ':':
+        pageMode = 2;
         pMessage++;
-        if (' ' != *pMessage)
+        while (pMessage[0] == ' ')
         {
-            pageMode = 2;
-            break;
+            pMessage++;
         }
-
-        // FALL THROUGH
+        break;
 
     case ';':
         pageMode = 3;
@@ -859,6 +885,9 @@ void do_page
         pMessage = newMessage;
     }
 
+    char noSpaceChars[] = { '\'', '#', ':', '-', ',' };
+    bool noSpaceCharFound = false;
+    
     switch (pageMode)
     {
     case 1:
@@ -866,48 +895,67 @@ void do_page
         //
         if (nValid == 1)
         {
-            safe_tprintf_str(omessage, &omp, T("From afar, %s pages you."),
-                Moniker(executor));
+            safe_tprintf_str(omessage, &omp, T("Sensorium (%s): %s sends a ping."), aFriendly, Moniker(executor));
+            safe_tprintf_str(imessage, &imp, T("Sensorium (%s): %s sends a ping."), aFriendly, Moniker(executor));
         }
         else
         {
-            safe_tprintf_str(omessage, &omp, T("From afar, %s pages %s."),
-                Moniker(executor), aFriendly);
+            safe_tprintf_str(omessage, &omp, T("Sensorium %s: %s sends a ping."), aFriendly, Moniker(executor));
+            safe_tprintf_str(imessage, &imp, T("Sensorium %s: %s sends a group-ping."), aFriendly, Moniker(executor));
         }
-        safe_tprintf_str(imessage, &imp, T("You page %s."), aFriendly);
         break;
 
     case 2:
-        safe_str(T("From afar, "), omessage, &omp);
         if (nValid > 1)
         {
-            safe_tprintf_str(omessage, &omp, T("to %s: "), aFriendly);
+            safe_tprintf_str(omessage, &omp, T("Sensorium %s: "), aFriendly);
+            safe_tprintf_str(imessage, &imp, T("Sensorium %s: "), aFriendly);
         }
-        safe_tprintf_str(omessage, &omp, T("%s %s"), Moniker(executor), pMessage);
-        safe_tprintf_str(imessage, &imp, T("Long distance to %s: %s %s"),
-            aFriendly, Moniker(executor), pMessage);
+        else
+        {
+            safe_tprintf_str(omessage, &omp, T("Sensorium (%s): "), aFriendly);
+            safe_tprintf_str(imessage, &imp, T("Sensorium (%s): "), aFriendly);
+        }
+        for (int i = 0; i < sizeof noSpaceChars; i++)
+        {
+            if (pMessage[0] == noSpaceChars[i])
+            {
+                noSpaceCharFound = true;
+                break;
+            }
+        }
+        safe_tprintf_str(omessage, &omp, T("%s%s%s"), Moniker(executor), noSpaceCharFound ? T("") : T(" "), pMessage);
+        safe_tprintf_str(imessage, &imp, T("%s%s%s"), Moniker(executor), noSpaceCharFound ? T("") : T(" "), pMessage);
         break;
 
     case 3:
-        safe_str(T("From afar, "), omessage, &omp);
         if (nValid > 1)
         {
-            safe_tprintf_str(omessage, &omp, T("to %s: "), aFriendly);
+            safe_tprintf_str(omessage, &omp, T("Sensorium %s: "), aFriendly);
+            safe_tprintf_str(imessage, &imp, T("Sensorium %s: "), aFriendly);
+        }
+        else
+        {
+            safe_tprintf_str(omessage, &omp, T("Sensorium (%s): "), aFriendly);
+            safe_tprintf_str(imessage, &imp, T("Sensorium (%s): "), aFriendly);
         }
         safe_tprintf_str(omessage, &omp, T("%s%s"), Moniker(executor), pMessage);
-        safe_tprintf_str(imessage, &imp, T("Long distance to %s: %s%s"),
-            aFriendly, Moniker(executor), pMessage);
+        safe_tprintf_str(imessage, &imp, T("%s%s"), Moniker(executor), pMessage);
         break;
 
     default:
         if (nValid > 1)
         {
-            safe_tprintf_str(omessage, &omp, T("To %s, "), aFriendly);
+            safe_tprintf_str(omessage, &omp, T("Sensorium %s: "), aFriendly);
+            safe_tprintf_str(imessage, &imp, T("Sensorium %s: "), aFriendly);
         }
-        safe_tprintf_str(omessage, &omp, T("%s pages: %s"), Moniker(executor),
-            pMessage);
-        safe_tprintf_str(imessage, &imp, T("You paged %s with \xE2\x80\x98%s\xE2\x80\x99"),
-            aFriendly, pMessage);
+        else
+        {
+            safe_tprintf_str(omessage, &omp, T("Sensorium (%s): "), aFriendly);
+            safe_tprintf_str(imessage, &imp, T("Sensorium (%s): "), aFriendly);
+        }
+        safe_tprintf_str(omessage, &omp, T("%s says, \"%s\""), Moniker(executor), pMessage);
+        safe_tprintf_str(imessage, &imp, T("%s says, \"%s\""), Moniker(executor), pMessage);
         break;
     }
     free_lbuf(aFriendly);
@@ -944,17 +992,16 @@ void do_page
  * do_pemit: Messages to specific players, or to all but specific players.
  */
 
-static void whisper_pose(dbref player, dbref target, UTF8 *message, bool bSpace)
+static void whisper_pose(dbref player, dbref target, UTF8* message, bool bSpace, UTF8* from)
 {
     UTF8 *newMessage = modSpeech(player, message, true, (UTF8 *)"whisper");
     if (newMessage)
     {
         message = newMessage;
     }
-    UTF8 *buff = alloc_lbuf("do_pemit.whisper.pose");
-    mux_strncpy(buff, Moniker(player), LBUF_SIZE-1);
-    notify_with_cause(target, player, tprintf(T("You sense %s%s%s"), buff,
-        bSpace ? " " : "", message));
+    UTF8* buff = alloc_lbuf("do_pemit.whisper.pose");
+    mux_strncpy(buff, Moniker(player), LBUF_SIZE - 1);
+    notify_with_cause(target, player, tprintf(T("Whisper (%s): %s%s%s"), from, Moniker(player), bSpace ? " " : "", message));
     free_lbuf(buff);
     if (newMessage)
     {
@@ -991,13 +1038,31 @@ void do_pemit_single
     int pemit_flags,
     dbref target,
     int chPoseType,
-    UTF8 *message
+    UTF8* message,
+    dbref* aPlayers = nullptr,
+    int nPlayers = 0
 )
 {
     dbref loc;
     UTF8 *buf2, *bp;
     int depth;
     bool ok_to_do = false;
+
+    UTF8 *from, *bufc;
+    from = bufc = alloc_lbuf("do_pemit_single.listfrom");
+    safe_str(Moniker(player), from, &bufc);
+    while (nPlayers > 0)
+    {
+        nPlayers--;
+        if (aPlayers[nPlayers] == target)
+        {
+            continue;
+        }
+
+        safe_str(T(", "), from, &bufc);
+        safe_str(Moniker(aPlayers[nPlayers]), from, &bufc);
+    }
+    *bufc = '\0';
 
     switch (key)
     {
@@ -1041,7 +1106,7 @@ void do_pemit_single
         break;
 
     case AMBIGUOUS:
-        notify(player, T("I don\xE2\x80\x99t know who you mean!"));
+        notify(player, T("I don\'t know who you mean!"));
         break;
 
     default:
@@ -1082,6 +1147,9 @@ void do_pemit_single
         }
         loc = where_is(target);
 
+        char noSpaceChars[] = { '\'', '#', ':', '-', ',' };
+        bool noSpaceCharFound = false;
+
         switch (key)
         {
         case PEMIT_PEMIT:
@@ -1121,12 +1189,24 @@ void do_pemit_single
             {
             case ':':
                 message++;
-                whisper_pose(player, target, message, true);
+                while (message[0] == ' ')
+                {
+                    message++;
+                }
+                for (int i = 0; i < sizeof noSpaceChars; i++)
+                {
+                    if (message[0] == noSpaceChars[i])
+                    {
+                        noSpaceCharFound = true;
+                        break;
+                    }
+                }
+                whisper_pose(player, target, message, !noSpaceCharFound, from);
                 break;
 
             case ';':
                 message++;
-                whisper_pose(player, target, message, false);
+                whisper_pose(player, target, message, false, from);
                 break;
 
             case '"':
@@ -1139,7 +1219,7 @@ void do_pemit_single
                     message = newMessage;
                 }
                 notify_with_cause(target, player,
-                    tprintf(T("%s whispers \xE2\x80\x9C%s\xE2\x80\x9D"), Moniker(player), message));
+                    tprintf(T("Whisper (%s): %s says, \"%s\""), from, Moniker(player), message));
                 if (newMessage)
                 {
                     free_lbuf(newMessage);
@@ -1169,19 +1249,19 @@ void do_pemit_single
             {
                 message = newMessage;
             }
-            notify(target, tprintf(T("You say, \xE2\x80\x9C%s\xE2\x80\x9D"), message));
+            notify(target, tprintf(T("%s says, \"%s\""), Moniker(player), message));
             if (loc != NOTHING)
             {
                 saystring = modSpeech(target, message, false, (UTF8 *)"@fsay");
                 if (saystring)
                 {
-                    p = tprintf(T("%s %s \xE2\x80\x9C%s\xE2\x80\x9D"), Moniker(target),
+                    p = tprintf(T("%s %s \"%s\""), Moniker(target),
                         saystring, message);
                     notify_except(loc, player, target, p, 0);
                 }
                 else
                 {
-                    p = tprintf(T("%s says, \xE2\x80\x9C%s\xE2\x80\x9D"), Moniker(target),
+                    p = tprintf(T("%s says, \"%s\""), Moniker(target),
                         message);
                     notify_except(loc, player, target, p, 0);
                 }
@@ -1202,7 +1282,15 @@ void do_pemit_single
             {
                 message = newMessage;
             }
-            p = tprintf(T("%s %s"), Moniker(target), message);
+            for (int i = 0; i < sizeof noSpaceChars; i++)
+            {
+                if (message[0] == noSpaceChars[i])
+                {
+                    noSpaceCharFound = true;
+                    break;
+                }
+            }
+            p = tprintf(T("%s%s%s"), Moniker(target), noSpaceCharFound ? T("") : T(" "), message);
             notify_all_from_inside(loc, player, p);
             if (newMessage)
             {
@@ -1264,13 +1352,15 @@ void do_pemit_single
     int key,
     bool bDoContents,
     int pemit_flags,
-    UTF8 *recipient,
+    UTF8* recipient,
     int chPoseType,
-    UTF8 *message
+    UTF8* message,
+    dbref* aPlayers,
+    int nPlayers
 )
 {
     dbref target = FindPemitTarget(player, key, recipient);
-    do_pemit_single(player, key, bDoContents, pemit_flags, target, chPoseType, message);
+    do_pemit_single(player, key, bDoContents, pemit_flags, target, chPoseType, message, aPlayers, nPlayers);
 }
 
 void do_pemit_list
@@ -1355,7 +1445,7 @@ void do_pemit_list
         dbref target = aPlayers[i];
         if (NOTHING != target)
         {
-            do_pemit_single(player, key, bDoContents, pemit_flags, target, chPoseType, message);
+            do_pemit_single(player, key, bDoContents, pemit_flags, target, chPoseType, message, aPlayers, nPlayers);
         }
     }
 
@@ -1412,8 +1502,8 @@ void do_pemit_whisper
     dbref enactor,
     int   key,
     int   nargs,
-    UTF8 *recipient,
-    UTF8 *message
+    UTF8* recipient,
+    UTF8* message
 )
 {
     UNUSED_PARAMETER(caller);
@@ -1496,7 +1586,7 @@ void do_pemit_whisper
                     target = match_result();
                 }
 
-                if (NOTHING != target)
+                if (target >= 0)
                 {
                     if (!noisy_check_whisper_target(executor, target, key))
                     {
@@ -1506,6 +1596,14 @@ void do_pemit_whisper
                     {
                         aPlayers[nPlayers++] = target;
                     }
+                }
+                else if (target == AMBIGUOUS)
+                {
+                    notify(executor, tprintf(T("I found more than one \"%s\"."), trim_spaces((const UTF8 *)r)));
+                }
+                else
+                {
+                    notify(executor, tprintf(T("I don\'t recognize \"%s\"."), trim_spaces((const UTF8 *)r)));
                 }
             }
 
@@ -1522,7 +1620,7 @@ void do_pemit_whisper
                 }
 
                 dbref target = lookup_player(executor, p, true);
-                if (NOTHING != target)
+                if (target >= 0)
                 {
                     aPlayers[nPlayers++] = target;
                 }
@@ -1532,7 +1630,7 @@ void do_pemit_whisper
                     match_neighbor();
                     target = match_result();
 
-                    if (NOTHING != target)
+                    if (target >= 0)
                     {
                         if (!noisy_check_whisper_target(executor, target, key))
                         {
@@ -1542,6 +1640,14 @@ void do_pemit_whisper
                         {
                             aPlayers[nPlayers++] = target;
                         }
+                    }
+                    else if (target == AMBIGUOUS)
+                    {
+                        notify(executor, tprintf(T("I found more than one \"%s\"!"), p));
+                    }
+                    else
+                    {
+                        notify(executor, tprintf(T("I did not find anyone named \"%s\"!"), p));
                     }
                 }
 
@@ -1581,6 +1687,12 @@ void do_pemit_whisper
                 }
             }
         }
+
+        if (nValid == 0)
+        {
+            notify(executor, T("Nobody to whisper to."));
+            return;
+        }
     }
 
     if (  bModified
@@ -1590,9 +1702,9 @@ void do_pemit_whisper
         // Update the database.
         //
         ITL itl;
-        UTF8 *pBuff = alloc_lbuf("do_pemit_whisper.lastwhisper");
-        UTF8 *pBufc = pBuff;
-        ItemToList_Init(&itl, pBuff, &pBufc);
+        UTF8* pBuff = alloc_lbuf("do_pemit_whisper.lastwhisper");
+        UTF8* pBufc = pBuff;
+        ItemToList_Init(&itl, pBuff, &pBufc, 0, (UTF8)',');
         for (int i = 0; i < nPlayers; i++)
         {
             if (  Good_obj(aPlayers[i])
@@ -1655,16 +1767,9 @@ void do_pemit_whisper
                 {
                     bFirst = false;
                 }
-                else if (nPlayers-1 == i)
+                else if (nPlayers - 1 == i)
                 {
-                    if (2 == nPlayers)
-                    {
-                        safe_copy_buf(T(" and "), 5, aFriendly, &pFriendly);
-                    }
-                    else
-                    {
-                        safe_copy_buf(T(", and "), 6, aFriendly, &pFriendly);
-                    }
+                    safe_copy_buf(T(", "), 2, aFriendly, &pFriendly);
                 }
                 else
                 {
@@ -1678,18 +1783,15 @@ void do_pemit_whisper
         switch (chPoseType)
         {
         case ';':
-            notify(executor, tprintf(T("%s sense \xE2\x80\x9C%s%s\xE2\x80\x9D"),
-                aFriendly, Moniker(executor), &message[1]));
+            notify(executor, tprintf(T("Whisper (%s): %s%s"), aFriendly, Moniker(executor), &message[1]));
             break;
 
         case ':':
-            notify(executor, tprintf(T("%s sense \xE2\x80\x9C%s %s\xE2\x80\x9D"),
-                aFriendly, Moniker(executor), &message[1]));
+            notify(executor, tprintf(T("Whisper (%s): %s%s"), aFriendly, Moniker(executor), &message[1]));
             break;
 
         default:
-            notify(executor, tprintf(T("You whisper \xE2\x80\x9C%s\xE2\x80\x9D to %s."), message,
-                aFriendly));
+            notify(executor, tprintf(T("Whisper (%s): %s says, \"%s\""), aFriendly, Moniker(executor), message));
             break;
         }
 
@@ -1701,7 +1803,7 @@ void do_pemit_whisper
         if (Good_obj(aPlayers[i]))
         {
             do_pemit_single(executor, key, false, pemit_flags,
-                tprintf(T("#%d"), aPlayers[i]), chPoseType, message);
+                tprintf(T("#%d"), aPlayers[i]), chPoseType, message, aPlayers, nPlayers);
         }
     }
 }
@@ -1715,9 +1817,9 @@ void do_pemit
     int   eval,
     int   key,
     int   nargs,
-    UTF8 *recipient,
-    UTF8 *message,
-    const UTF8 *cargs[],
+    UTF8* recipient,
+    UTF8* message,
+    const UTF8* cargs[],
     int   ncargs
 )
 {
