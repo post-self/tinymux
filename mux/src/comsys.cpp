@@ -1292,63 +1292,68 @@ static void BuildChannelMessage
     UTF8* saystring = nullptr;
     UTF8* newPose = nullptr;
 
+    UTF8 *cPose, *buffer;
+    cPose = buffer = alloc_lbuf("do_think");
+    mux_strncpy(cPose, pPose, sizeof(cPose) - 1);
+    mux_exec(pPose, LBUF_SIZE - 1, cPose, &buffer, user->who, user->who, user->who, EV_FCHECK | EV_EVAL | EV_TOP, nullptr, 0);
+    
     char noSpaceChars[] = { '\'', '#', ':', '-', ',' };
     bool noSpaceCharFound = false;
 
-    switch (pPose[0])
+    switch (cPose[0])
     {
     case ':':
-        pPose++;
-        while (pPose[0] == ' ')
+        cPose++;
+        while (cPose[0] == ' ')
         {
-            pPose++;
+            cPose++;
         }
         for (int i = 0; i < sizeof noSpaceChars; i++)
         {
-            if (pPose[0] == noSpaceChars[i])
+            if (cPose[0] == noSpaceChars[i])
             {
                 noSpaceCharFound = true;
                 break;
             }
         }
-        newPose = modSpeech(bChannelSpeechMod ? ch_obj : user->who, pPose, true, T("channel/pose"));
+        newPose = modSpeech(bChannelSpeechMod ? ch_obj : user->who, cPose, true, T("channel/pose"));
         if (newPose)
         {
-            pPose = newPose;
+            cPose = newPose;
         }
         if (!noSpaceCharFound)
         {
             safe_chr(' ', *messNormal, &mnptr);
         }
-        safe_str(pPose, *messNormal, &mnptr);
+        safe_str(cPose, *messNormal, &mnptr);
         if (!bSpoof)
         {
             safe_chr(' ', *messNoComtitle, &mncptr);
-            safe_str(pPose, *messNoComtitle, &mncptr);
+            safe_str(cPose, *messNoComtitle, &mncptr);
         }
         break;
 
     case ';':
-        pPose++;
-        newPose = modSpeech(bChannelSpeechMod ? ch_obj : user->who, pPose, true, T("channel/pose"));
+        cPose++;
+        newPose = modSpeech(bChannelSpeechMod ? ch_obj : user->who, cPose, true, T("channel/pose"));
         if (newPose)
         {
-            pPose = newPose;
+            cPose = newPose;
         }
-        safe_str(pPose, *messNormal, &mnptr);
+        safe_str(cPose, *messNormal, &mnptr);
         if (!bSpoof)
         {
-            safe_str(pPose, *messNoComtitle, &mncptr);
+            safe_str(cPose, *messNoComtitle, &mncptr);
         }
         break;
 
     default:
-        newPose = modSpeech(bChannelSpeechMod ? ch_obj : user->who, pPose, true, T("channel"));
+        newPose = modSpeech(bChannelSpeechMod ? ch_obj : user->who, cPose, true, T("channel"));
         if (newPose)
         {
-            pPose = newPose;
+            cPose = newPose;
         }
-        saystring = modSpeech(bChannelSayString ? ch_obj : user->who, pPose, false, T("channel"));
+        saystring = modSpeech(bChannelSayString ? ch_obj : user->who, cPose, false, T("channel"));
         if (saystring)
         {
             safe_chr(' ', *messNormal, &mnptr);
@@ -1359,7 +1364,7 @@ static void BuildChannelMessage
         {
             safe_str(T(" says, \""), *messNormal, &mnptr);
         }
-        safe_str(pPose, *messNormal, &mnptr);
+        safe_str(cPose, *messNormal, &mnptr);
         safe_str(T("\""), *messNormal, &mnptr);
         if (!bSpoof)
         {
@@ -1373,7 +1378,7 @@ static void BuildChannelMessage
             {
                 safe_str(T(" says, \""), *messNoComtitle, &mncptr);
             }
-            safe_str(pPose, *messNoComtitle, &mncptr);
+            safe_str(cPose, *messNoComtitle, &mncptr);
             safe_str(T("\""), *messNoComtitle, &mncptr);
         }
         break;
