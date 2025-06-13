@@ -1150,7 +1150,8 @@ static void announce_connect(const dbref player, DESC *d)
     {
         check_mail(player, 0, false);
     }
-    look_in(player, Location(player), (LK_SHOWEXIT|LK_OBEYTERSE|LK_SHOWVRML));
+    do_wait(player, player, player, 0, key, 2, const_cast<UTF8*>(T("0.5")), const_cast<UTF8*>(T("look here")), NULL, 0);
+    //look_in(player, Location(player), (LK_SHOWEXIT|LK_OBEYTERSE|LK_SHOWVRML));
     mudstate.curr_enactor = temp;
 }
 
